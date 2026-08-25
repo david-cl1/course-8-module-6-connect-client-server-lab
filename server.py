@@ -21,7 +21,7 @@ def home():
 # This route should return the full list of events as JSON
 @app.route('/events')
 def all_events ():
-    return events.jsonify
+    return jsonify(events)
 
 # TASK: Create a POST route for "/events"
 # This route should:
@@ -32,14 +32,22 @@ def all_events ():
 # 5. Return the new event with status code 201
 @app.route('/events', methods=["POST"])
 def add_event():
-    new_id = len(events) +1
+    
     data = request.get_json()
-    new_title = data.get('title')
 
-    new_event = {'id': f"{new_id}",
-                 'title':f"{new_title}"}
+    if not data or not data.get('title'):
+        return jsonify({'error': 'Title is required'}), 400
+    
+    new_title = data.get('title')
+    new_id = len(events) +1
+    
+    new_event = {
+        'id': new_id,
+        'title': new_title
+    }
 
     events.append(new_event)
-    return new_event ,201
+    return jsonify(new_event) ,201
+
 if __name__ == "__main__":
     app.run(debug=True)
